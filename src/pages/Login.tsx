@@ -17,7 +17,7 @@ const schema = z.object({
 });
 
 // 🔗 GANTI URL di bawah ini dengan link website absensi karyawan Anda
-const ABSENSI_URL = "https://absensi-karyawan.example.com";
+const ABSENSI_URL = "hbd-novita.vercel.app";
 
 export default function Login() {
   const { user, loading } = useAuth();
