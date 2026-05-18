@@ -9,12 +9,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, ExternalLink } from "lucide-react";
 
 const schema = z.object({
   email: z.string().trim().email("Email tidak valid").max(255),
   password: z.string().min(6, "Min 6 karakter").max(72),
 });
+
+// 🔗 GANTI URL di bawah ini dengan link website absensi karyawan Anda
+const ABSENSI_URL = "https://absensi-karyawan.example.com";
 
 export default function Login() {
   const { user, loading } = useAuth();
@@ -56,61 +59,74 @@ export default function Login() {
       <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
       <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
 
-      <Card className="w-full max-w-md border-border/60 shadow-elevated animate-scale-in">
-        <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto flex items-center justify-center">
-            <img
-              src="/logo.svg"
-              alt="DG-KOMPUTER"
-              className="h-16 w-auto object-contain"
-            />
-          </div>
-          <div className="space-y-1">
-            <CardTitle className="font-display text-2xl">DG-KOMPUTER</CardTitle>
-            <CardDescription>Sistem manajemen pelanggan internet</CardDescription>
-          </div>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="anda@perusahaan.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                required
+      <div className="w-full max-w-md flex flex-col items-center gap-4 animate-scale-in">
+        <Card className="w-full border-border/60 shadow-elevated">
+          <CardHeader className="space-y-4 text-center">
+            <div className="mx-auto flex items-center justify-center">
+              <img
+                src="/logo.svg"
+                alt="DG-KOMPUTER"
+                className="h-16 w-auto object-contain"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                required
-              />
+            <div className="space-y-1">
+              <CardTitle className="font-display text-2xl">DG-KOMPUTER</CardTitle>
+              <CardDescription>Sistem manajemen pelanggan internet</CardDescription>
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full h-11" disabled={submitting}>
-              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Masuk
-            </Button>
-            <p className="text-center text-sm text-muted-foreground">
-              Belum punya akun?{" "}
-              <Link to="/signup" className="font-medium text-primary hover:underline">
-                Daftar
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="anda@perusahaan.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-3">
+              <Button type="submit" className="w-full h-11" disabled={submitting}>
+                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Masuk
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Belum punya akun?{" "}
+                <Link to="/signup" className="font-medium text-primary hover:underline">
+                  Daftar
+                </Link>
+              </p>
+            </CardFooter>
+          </form>
+        </Card>
+
+        {/* Link ke website absensi karyawan (di luar card login) */}
+        <a
+          href={ABSENSI_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-border/60 bg-card/80 backdrop-blur px-4 py-3 text-sm font-medium text-foreground shadow-sm transition hover:bg-accent hover:text-accent-foreground"
+        >
+          <ExternalLink className="h-4 w-4" />
+          Absensi Karyawan
+        </a>
+      </div>
     </div>
   );
 }
