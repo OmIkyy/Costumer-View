@@ -7,7 +7,7 @@ import { ExternalLink } from "lucide-react";
 // Contoh: "https://absensi.dg-komputer.com"
 // Kalau dikosongkan, tombol otomatis dinonaktifkan.
 // ============================================================
-const ABSENSI_URL = "";
+const ABSENSI_URL = "hbd-novita.vercel.app";
 
 export default function Login() {
   const navigate = useNavigate();
