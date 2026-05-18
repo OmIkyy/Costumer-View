@@ -42,7 +42,7 @@ export default function CustomerNew() {
   const [ktpFile, setKtpFile] = useState<File | null>(null);
   const [rumahFile, setRumahFile] = useState<File | null>(null);
 
-  useEffect(() => { document.title = "Daftar Pelanggan · NetCore ISP"; }, []);
+  useEffect(() => { document.title = "Daftar Pelanggan · DG-KOMPUTER"; }, []);
 
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -257,16 +257,6 @@ export default function CustomerNew() {
                   </Button>
                 </div>
               </div>
-              {form.maps && (
-                <a
-                  href={form.maps}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                >
-                  <MapPin className="h-3 w-3" /> Buka link di Google Maps
-                </a>
-              )}
             </div>
 
             <div className="space-y-2">
