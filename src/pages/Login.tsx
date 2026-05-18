@@ -2,12 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
 
-// ============================================================
-// 👇 ISI URL WEBSITE ABSENSI KARYAWAN ANDA DI SINI 👇
-// Contoh: "https://absensi.dg-komputer.com"
-// Kalau dikosongkan, tombol otomatis dinonaktifkan.
-// ============================================================
-const ABSENSI_URL = "hbd-novita.vercel.app";
+// Ganti dengan URL website absensi karyawan Anda
+const ABSENSI_URL = "https://absensi-karyawan.vercel.app";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,7 +17,10 @@ export default function Login() {
     setError(null);
     setLoading(true);
     try {
-      // TODO: ganti dengan logic login asli Anda
+      // TODO: ganti dengan logic login asli Anda (supabase / api / dll)
+      // contoh:
+      // const { error } = await supabase.auth.signInWithPassword({ email, password });
+      // if (error) throw error;
       await new Promise((r) => setTimeout(r, 600));
       navigate("/");
     } catch (err: any) {
@@ -36,10 +35,12 @@ export default function Login() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
         {/* Logo + Header */}
         <div className="flex flex-col items-center mb-6">
-          {/* Logo "DG" — tidak akan hilang karena pakai inline SVG/text, bukan file gambar */}
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center mb-3 shadow-md">
-            <span className="text-white font-bold text-xl tracking-tight">DG</span>
-          </div>
+          <img
+            src="/logo.png"
+            alt="DG-KOMPUTER"
+            className="w-16 h-16 object-contain mb-3"
+            onError={(e) => ((e.currentTarget.style.display = "none"))}
+          />
           <h1 className="text-2xl font-bold text-gray-900">DG-KOMPUTER</h1>
           <p className="text-sm text-gray-500 mt-1">
             Sistem manajemen pelanggan internet
@@ -108,28 +109,16 @@ export default function Login() {
           <div className="h-px flex-1 bg-gray-200" />
         </div>
 
-        {/* Link ke website absensi karyawan — buka URL EKSTERNAL di tab baru */}
-        {ABSENSI_URL ? (
-          <a
-            href={ABSENSI_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 hover:border-gray-400 active:scale-[0.99] transition"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Link ke website absensi karyawan
-          </a>
-        ) : (
-          <button
-            type="button"
-            disabled
-            title="Isi dulu ABSENSI_URL di bagian atas file Login.tsx"
-            className="flex items-center justify-center gap-2 w-full rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-400 cursor-not-allowed"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Link ke website absensi karyawan
-          </button>
-        )}
+        {/* Link ke website absensi karyawan */}
+        <a
+          href={ABSENSI_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 hover:border-gray-400 active:scale-[0.99] transition"
+        >
+          <ExternalLink className="h-4 w-4" />
+          Link ke website absensi karyawan
+        </a>
 
         <p className="text-center text-[11px] text-gray-400 mt-3">
           Khusus untuk karyawan DG-KOMPUTER
