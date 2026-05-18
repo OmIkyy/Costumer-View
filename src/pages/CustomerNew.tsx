@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Upload, ArrowLeft } from "lucide-react";
+import { Loader2, Upload, ArrowLeft, MapPin, Search, LocateFixed } from "lucide-react";
 import { AddressPicker, emptyWilayah, WilayahValue } from "@/components/forms/AddressPicker";
 import { usePackages, useCustomerTypes } from "@/hooks/useMasterData";
 
@@ -196,8 +196,77 @@ export default function CustomerNew() {
               </Select>
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="maps">Link Google Maps</Label>
-              <Input id="maps" placeholder="https://maps.google.com/..." value={form.maps} onChange={(e) => update("maps", e.target.value)} />
+              <Label htmlFor="maps" className="flex items-center gap-1.5">
+                <MapPin className="h-4 w-4 text-primary" /> Link Google Maps
+              </Label>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  id="maps"
+                  placeholder="https://maps.google.com/..."
+                  value={form.maps}
+                  onChange={(e) => update("maps", e.target.value)}
+                  className="flex-1"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const parts = [
+                        form.alamat,
+                        wilayah?.kelurahan_nama,
+                        wilayah?.kecamatan_nama,
+                        wilayah?.kota_nama,
+                        wilayah?.provinsi_nama,
+                      ].filter(Boolean);
+                      const q = parts.join(", ").trim();
+                      const url = q
+                        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`
+                        : `https://www.google.com/maps`;
+                      window.open(url, "_blank", "noopener,noreferrer");
+                    }}
+                  >
+                    <Search className="mr-1.5 h-4 w-4" /> Cari di Maps
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      if (!navigator.geolocation) {
+                        toast.error("Browser tidak mendukung lokasi");
+                        return;
+                      }
+                      const t = toast.loading("Mengambil lokasi...");
+                      navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                          const { latitude, longitude } = pos.coords;
+                          const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                          update("maps", link);
+                          toast.dismiss(t);
+                          toast.success("Lokasi berhasil diambil");
+                        },
+                        (err) => {
+                          toast.dismiss(t);
+                          toast.error(err.message || "Gagal mengambil lokasi");
+                        },
+                        { enableHighAccuracy: true, timeout: 10000 }
+                      );
+                    }}
+                  >
+                    <LocateFixed className="mr-1.5 h-4 w-4" /> Lokasi Saya
+                  </Button>
+                </div>
+              </div>
+              {form.maps && (
+                <a
+                  href={form.maps}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                >
+                  <MapPin className="h-3 w-3" /> Buka link di Google Maps
+                </a>
+              )}
             </div>
 
             <div className="space-y-2">
