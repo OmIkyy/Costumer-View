@@ -158,7 +158,7 @@ export default function CustomerNew() {
               <Input id="odp" value={form.odp} onChange={(e) => update("odp", e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="area">Area / Cluster</Label>
+              <Label htmlFor="area">Area</Label>
               <Input id="area" placeholder="Opsional, mis. nama cluster" value={form.area} onChange={(e) => update("area", e.target.value)} />
             </div>
             <div className="space-y-2">
