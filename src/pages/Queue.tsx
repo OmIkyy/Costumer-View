@@ -151,7 +151,7 @@ export default function Queue() {
           </DialogHeader>
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="onu">Serial Number ONU *</Label>
+              <Label htmlFor="onu">Type ONT *</Label>
               <Input id="onu" value={form.onu} onChange={(e) => setForm({ ...form, onu: e.target.value })} required />
             </div>
             <div className="grid grid-cols-2 gap-3">
