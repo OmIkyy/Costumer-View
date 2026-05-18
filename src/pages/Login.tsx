@@ -1,129 +1,116 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { logActivity } from "@/lib/logger";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
-// Ganti dengan URL website absensi karyawan Anda
-const ABSENSI_URL = "https://absensi-karyawan.vercel.app";
+const schema = z.object({
+  email: z.string().trim().email("Email tidak valid").max(255),
+  password: z.string().min(6, "Min 6 karakter").max(72),
+});
 
 export default function Login() {
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    document.title = "Masuk · DG-KOMPUTER";
+  }, []);
+
+  useEffect(() => {
+    if (!loading && user) navigate("/", { replace: true });
+  }, [user, loading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      // TODO: ganti dengan logic login asli Anda (supabase / api / dll)
-      // contoh:
-      // const { error } = await supabase.auth.signInWithPassword({ email, password });
-      // if (error) throw error;
-      await new Promise((r) => setTimeout(r, 600));
-      navigate("/");
-    } catch (err: any) {
-      setError(err?.message ?? "Gagal masuk");
-    } finally {
-      setLoading(false);
+    const parse = schema.safeParse({ email, password });
+    if (!parse.success) {
+      toast.error(parse.error.errors[0].message);
+      return;
     }
+    setSubmitting(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Login gagal", { description: error.message });
+      return;
+    }
+    await logActivity("login", `User ${email} masuk ke sistem`);
+    toast.success("Selamat datang kembali!");
+    navigate("/", { replace: true });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200 px-4 py-10">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-        {/* Logo + Header */}
-        <div className="flex flex-col items-center mb-6">
-          <img
-            src="/logo.png"
-            alt="DG-KOMPUTER"
-            className="w-16 h-16 object-contain mb-3"
-            onError={(e) => ((e.currentTarget.style.display = "none"))}
-          />
-          <h1 className="text-2xl font-bold text-gray-900">DG-KOMPUTER</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Sistem manajemen pelanggan internet
-          </p>
-        </div>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background p-4">
+      <div className="absolute inset-0 -z-10 bg-gradient-hero opacity-[0.07]" />
+      <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+      <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-blue-50/40 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="email@contoh.com"
+      <Card className="w-full max-w-md border-border/60 shadow-elevated animate-scale-in">
+        <CardHeader className="space-y-4 text-center">
+          <div className="mx-auto flex items-center justify-center">
+            <img
+              src="/logo.svg"
+              alt="DG-KOMPUTER"
+              className="h-16 w-auto object-contain"
             />
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
-            />
+          <div className="space-y-1">
+            <CardTitle className="font-display text-2xl">DG-KOMPUTER</CardTitle>
+            <CardDescription>Sistem manajemen pelanggan internet</CardDescription>
           </div>
-
-          {error && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
-              {error}
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="anda@perusahaan.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col gap-3">
+            <Button type="submit" className="w-full h-11" disabled={submitting}>
+              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Masuk
+            </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              Belum punya akun?{" "}
+              <Link to="/signup" className="font-medium text-primary hover:underline">
+                Daftar
+              </Link>
             </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-black text-white font-medium py-2.5 hover:bg-gray-900 transition disabled:opacity-60"
-          >
-            {loading ? "Memproses..." : "Masuk"}
-          </button>
+          </CardFooter>
         </form>
-
-        {/* Daftar */}
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Belum punya akun?{" "}
-          <Link to="/register" className="text-red-500 font-medium hover:underline">
-            Daftar
-          </Link>
-        </p>
-
-        {/* Divider */}
-        <div className="my-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-gray-200" />
-          <span className="text-xs text-gray-400 uppercase tracking-wide">
-            Akses lain
-          </span>
-          <div className="h-px flex-1 bg-gray-200" />
-        </div>
-
-        {/* Link ke website absensi karyawan */}
-        <a
-          href={ABSENSI_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 hover:border-gray-400 active:scale-[0.99] transition"
-        >
-          <ExternalLink className="h-4 w-4" />
-          Link ke website absensi karyawan
-        </a>
-
-        <p className="text-center text-[11px] text-gray-400 mt-3">
-          Khusus untuk karyawan DG-KOMPUTER
-        </p>
-      </div>
+      </Card>
     </div>
   );
 }
