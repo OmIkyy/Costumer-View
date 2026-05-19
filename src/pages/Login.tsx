@@ -17,7 +17,7 @@ const schema = z.object({
 });
 
 // 🔗 GANTI URL di bawah ini dengan link website absensi karyawan Anda
-const ABSENSI_URL = "https://absen-dg-5tqd.vercel.app/";
+const ABSENSI_URL = "https://absen-data-view.vercel.app/";
 
 export default function Login() {
   const { user, loading } = useAuth();
